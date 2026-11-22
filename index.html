@@ -85,6 +85,7 @@ nav button[aria-selected="true"]{transform:translateY(-2px);box-shadow:0 4px 0 v
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-weight:800;opacity:0;transition:.25s;z-index:45;pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.lnk{font:inherit;background:none;border:0;color:var(--blue);text-decoration:underline;cursor:pointer;padding:0}
 </style>
 </head>
 <body>
@@ -101,6 +102,23 @@ nav button[aria-selected="true"]{transform:translateY(-2px);box-shadow:0 4px 0 v
 <p class="err" id="lerr" aria-live="polite"></p>
 <button class="go" id="lg">Masuk</button>
 <p class="sub" style="margin-top:12px;font-size:.9rem">Selama belajar, layar akan terkunci bila kamu pindah tab atau aplikasi. Setelah 3 kali keluar halaman, sesi ditutup.</p>
+</div>
+<p class="sub"><button class="lnk" id="admo">Menu guru</button></p>
+<div class="card" id="admbox" hidden>
+<h2>Menu guru</h2>
+<label>Password admin<input id="apw" type="password" autocomplete="off"></label>
+<button class="go" id="aok">Buka</button>
+<p class="sub" id="amsg" aria-live="polite"></p>
+<div id="apanel" hidden>
+<p class="sub" id="ast"></p>
+<label>Kode kuis untuk siswa<input id="akd" maxlength="20" autocomplete="off"></label>
+<button class="go" id="akb">Simpan kode</button> <button class="go" id="arn">Acak kode</button>
+<h3>Unggah soal</h3>
+<p class="sub">Satu soal per baris: Pertanyaan, A, B, C, D, Kunci (A-D), Penjelasan. Pisahkan kolom dengan Tab (tempel dari Excel atau Sheets), tanda |, atau koma (file CSV). Maksimal 50 soal. Soal lama diganti.</p>
+<input type="file" id="aft" accept=".csv,.txt,.tsv">
+<textarea id="asl" rows="7" placeholder="Berapa bit alamat IPv4?|16|32|64|128|B|IPv4 memakai 32-bit."></textarea>
+<button class="go" id="aup">Unggah soal</button>
+</div>
 </div>
 </div>
 <main id="app">
@@ -164,7 +182,8 @@ nav button[aria-selected="true"]{transform:translateY(-2px);box-shadow:0 4px 0 v
 </section>
 
 <section id="t4" hidden>
-<div class="card"><h2>Kuis kilat</h2><p>Pilih satu jawaban. Penjelasan muncul setelah kamu menjawab.</p><div id="quiz"></div><p class="verdict" id="qs"></p></div>
+<div class="card" id="qgate" hidden><h2>Kode kuis</h2><p>Minta kode kuis dari gurumu, lalu ketik di sini.</p><input id="kk" maxlength="20" autocomplete="off" placeholder="Kode kuis"><p class="err" id="kerr" aria-live="polite"></p><button class="go" id="kg">Mulai kuis</button></div>
+<div class="card" id="qcard"><h2>Kuis kilat</h2><p>Pilih satu jawaban. Penjelasan muncul setelah kamu menjawab.</p><div id="quiz"></div><p class="verdict" id="qs"></p></div>
 </section>
 
 <section id="t5" hidden>
@@ -196,7 +215,7 @@ nav button[aria-selected="true"]{transform:translateY(-2px);box-shadow:0 4px 0 v
 
 <script>
 // TEMPEL ALAMAT WEB APP APPS SCRIPT (berakhiran /exec) DI ANTARA TANDA KUTIP BERIKUT:
-const API_URL='https://script.google.com/macros/s/AKfycbxbSzmAmiR9p6BqD9MSED87p5TruAnnBgk4ZQgpK39MD7DTr15eJtijQ0SmYihavqkL/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbyr1ug9092iLOjgNEldGFabHs_iCNiPeNx9T0cE7kMSMkx9_znw4ucC4ath9fum15i1/exec';
 const $=s=>document.querySelector(s);
 // tabs
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
@@ -458,6 +477,98 @@ function pull(){
 $('#or').onclick=pull;
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.t==='t7')pull()}));
 setInterval(()=>{if(!$('#t7').hidden)pull()},15000);
+// ===== kode kuis dan soal dari server =====
+let KODE='';
+function post(o){return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)}).then(r=>r.json())}
+if(API_URL){$('#qgate').hidden=false;$('#qcard').hidden=true;$('#quiz').innerHTML=''}
+$('#kg').onclick=()=>{
+  const k=$('#kk').value.trim();
+  if(!k){$('#kerr').textContent='Isi kode kuis dari gurumu.';return}
+  $('#kerr').textContent='Memeriksa…';
+  post({aksi:'soal',kode:k}).then(d=>{
+    if(!d.ok){$('#kerr').textContent=d.error||'Kode salah.';return}
+    if(!d.soal.length){$('#kerr').textContent='Belum ada soal. Hubungi gurumu.';return}
+    KODE=k;$('#kerr').textContent='';$('#qgate').hidden=true;$('#qcard').hidden=false;renderQ(d.soal);
+  }).catch(()=>{$('#kerr').textContent='Tidak bisa terhubung. Periksa internet.'});
+};
+function renderQ(list){
+  const box=$('#quiz');box.innerHTML='';qc=0;let done=0;MX.kuis=list.length*15;$('#qs').textContent='';refresh();
+  list.forEach((q,n)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML='<b>'+(n+1)+'. '+esc(q.q)+'</b><div class="opts"></div><p class="sub" style="margin-top:8px"></p>';
+    const o=d.querySelector('.opts');
+    q.o.forEach((t,k)=>{
+      if(!t.trim())return;
+      const b=document.createElement('button');b.textContent='ABCD'[k]+'. '+t;b.dataset.k=k;
+      b.onclick=()=>{
+        if(d.dataset.done)return;d.dataset.done=1;
+        post({aksi:'cek',kode:KODE,id:q.id,pil:k}).then(r=>{
+          if(!r.ok)throw 0;
+          const rb=o.querySelector('[data-k="'+r.kunci+'"]');if(rb)rb.classList.add('right');
+          if(r.benar){qc++;P.kuis=Math.max(P.kuis,qc*15);toast('+15 kuis');refresh()}else b.classList.add('wrong');
+          d.querySelector('p').textContent=r.penj||'';
+          if(++done===list.length)$('#qs').textContent='Skor kuis: '+qc+'/'+list.length+(qc===list.length?'. Sempurna!':'. Terus berlatih!');
+        }).catch(()=>{delete d.dataset.done;d.querySelector('p').textContent='Gagal memeriksa jawaban. Coba pilih lagi.'});
+      };
+      o.appendChild(b);
+    });
+    box.appendChild(d);
+  });
+}
+// ===== menu guru =====
+let APW='';
+function amsg(t){$('#amsg').textContent=t}
+function apost(o){o.pw=APW;return post(o)}
+$('#admo').onclick=()=>{$('#admbox').hidden=!$('#admbox').hidden};
+$('#aok').onclick=()=>{
+  if(!API_URL){amsg('API_URL belum diisi di index.html.');return}
+  APW=$('#apw').value;amsg('Memeriksa…');
+  apost({aksi:'adminStatus'}).then(d=>{
+    if(!d.ok){APW='';amsg(d.error);return}
+    amsg('');$('#apanel').hidden=false;
+    $('#ast').textContent='Soal tersimpan: '+d.jumlah+'. Kode kuis saat ini: '+(d.kode||'(belum diatur)');$('#akd').value=d.kode||'';
+  }).catch(()=>amsg('Tidak bisa terhubung ke Apps Script.'));
+};
+$('#akb').onclick=()=>{
+  apost({aksi:'adminKode',kode:$('#akd').value}).then(d=>amsg(d.ok?'Kode kuis disimpan: '+d.kode:d.error)).catch(()=>amsg('Gagal menyimpan kode.'));
+};
+$('#arn').onclick=()=>{$('#akd').value=Math.random().toString(36).slice(2,8).toUpperCase()};
+function cut(l){
+  if(l.includes('\t'))return l.split('\t');
+  if(l.includes('|'))return l.split('|');
+  const r=[];let c='',q=false;
+  for(let i=0;i<l.length;i++){const ch=l[i];
+    if(ch==='"'){if(q&&l[i+1]==='"'){c+='"';i++}else q=!q}
+    else if(ch===','&&!q){r.push(c);c=''}else c+=ch}
+  r.push(c);return r;
+}
+function parseSoal(t){
+  const out=[],bad=[];
+  t.split(/\r?\n/).forEach((l,i)=>{
+    if(!l.trim())return;
+    const c=cut(l).map(x=>x.trim());
+    if(i===0&&/^pertanyaan$/i.test(c[0]))return;
+    const kk=(c[5]||'').toUpperCase();
+    if(c.length<6||!c[0]||kk.length!==1||'ABCD'.indexOf(kk)<0)bad.push(i+1);
+    else out.push([c[0],c[1],c[2],c[3],c[4],kk,c[6]||'']);
+  });
+  return {out,bad};
+}
+$('#aft').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{$('#asl').value=String(r.result).replace('\ufeff','')};r.readAsText(f);
+};
+$('#aup').onclick=()=>{
+  const {out,bad}=parseSoal($('#asl').value);
+  if(bad.length){amsg('Baris tidak valid: '+bad.slice(0,8).join(', ')+'. Cek jumlah kolom dan kunci (A-D).');return}
+  if(!out.length){amsg('Belum ada soal.');return}
+  if(out.length>50){amsg('Maksimal 50 soal. Kamu mengunggah '+out.length+'.');return}
+  amsg('Mengunggah…');
+  apost({aksi:'adminSoal',soal:out}).then(d=>{
+    if(d.ok){amsg(d.jumlah+' soal tersimpan.');$('#ast').textContent='Soal tersimpan: '+d.jumlah+'. Kode kuis saat ini: '+($('#akd').value||'(belum diatur)')}
+    else amsg(d.error);
+  }).catch(()=>amsg('Gagal mengunggah soal.'));
+};
 </script>
 </body>
 </html>
