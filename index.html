@@ -50,10 +50,62 @@ input{width:100%;font:700 1.25rem ui-monospace,Menlo,Consolas,monospace;padding:
 .opts button.right{border-color:var(--ok);background:var(--ok-soft)}.opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
 ol{padding-left:20px;margin:6px 0}
 li{margin-bottom:6px}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+@media print{body *{display:none!important}body::before{content:"Pencetakan dinonaktifkan";display:block;font-size:2rem}}
+#login{max-width:440px;margin:8vh auto;padding:0 16px}
+#app{display:none}
+body.in #app{display:block}body.in #login{display:none}
+body.lk #app{visibility:hidden}
+#lock{display:none;position:fixed;inset:0;background:var(--ink);color:var(--bg);z-index:50;align-items:center;justify-content:center;text-align:center;padding:24px}
+body.lk #lock{display:flex}
+#wm{position:fixed;inset:0;pointer-events:none;z-index:40;display:none}
+body.in #wm{display:block}
+label{display:block;font-weight:700;margin-bottom:10px}label input{margin-top:4px}
+.err{color:var(--bad);font-weight:700;min-height:1.5em}
+.bar2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:8px 12px;margin-bottom:14px;font-size:.9rem}
+.bar2 button{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--yel);color:#14213d;border-radius:8px;padding:4px 10px;cursor:pointer;margin-left:4px}
+textarea{width:100%;font:.9rem ui-monospace,Menlo,monospace;padding:8px;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:8px}
+:root{--bg:#fff7df;--grid:#ffe8a8;--line:#f0c36a;--pink:#d81b7a}
+body{border-top:12px solid;border-image:linear-gradient(90deg,#2f6feb,#d81b7a,#ff8a1f,#a6e22e,#6a3df0) 1}
+h1{text-shadow:3px 3px 0 #ff8a1f}
+.card{border-top-width:10px;border-top-color:var(--st,#2f6feb);box-shadow:5px 5px 0 var(--st,#2f6feb)}
+.card:nth-of-type(2n){--st:#d81b7a}.card:nth-of-type(3n){--st:#ff8a1f}.card:nth-of-type(4n){--st:#6a3df0}
+.two .card:nth-of-type(2) .big{color:var(--pink)}
+nav button{background:var(--c);color:var(--ct,#fff)}
+nav button:nth-child(1){--c:#2f6feb}nav button:nth-child(2){--c:#d81b7a}nav button:nth-child(3){--c:#ff8a1f;--ct:#14213d}nav button:nth-child(4){--c:#6a3df0}nav button:nth-child(5){--c:#a6e22e;--ct:#14213d}nav button:nth-child(6){--c:#0b7f73}nav button:nth-child(7){--c:#ffc93c;--ct:#14213d}
+nav button[aria-selected="true"]{transform:translateY(-2px);box-shadow:0 4px 0 var(--c)}
+#b4{background:#2f6feb;color:#fff}#b6{background:#d81b7a;color:#fff}
+.bar i{background:linear-gradient(90deg,#2f6feb,#d81b7a,#ff8a1f)}
+.br{display:grid;grid-template-columns:96px 1fr 40px;gap:8px;align-items:center;margin:8px 0;font-size:.9rem}
+.br i{display:block;height:18px;border-radius:9px;transition:width .4s}
+.tr{background:var(--blue-soft);border-radius:9px;overflow:hidden}
+.ov{overflow-x:auto}.tb{width:100%;border-collapse:collapse;margin:8px 0}
+.tb th,.tb td{padding:6px 8px;border-bottom:1.5px dashed var(--line);text-align:left}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-weight:800;opacity:0;transition:.25s;z-index:45;pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<main>
+<div id="wm" aria-hidden="true"></div>
+<div id="lock" role="alertdialog" aria-live="assertive"><div><h1>Layar dikunci</h1><p id="lkm"></p><button class="go" id="back">Kembali belajar</button></div></div>
+<div id="login">
+<span class="tag">Kelas X TJKT</span>
+<h1>Detektif IP</h1>
+<div class="card">
+<h2>Masuk dulu</h2>
+<p>Isi nama dan kelasmu. Keduanya akan tampil sebagai watermark di layar selama kamu belajar.</p>
+<label>Nama lengkap<input id="nm" maxlength="30" autocomplete="off" placeholder="contoh: Budi Santoso"></label>
+<label>Kelas<input id="kl" maxlength="15" autocomplete="off" placeholder="contoh: X TJKT 1"></label>
+<p class="err" id="lerr" aria-live="polite"></p>
+<button class="go" id="lg">Masuk</button>
+<p class="sub" style="margin-top:12px;font-size:.9rem">Selama belajar, layar akan terkunci bila kamu pindah tab atau aplikasi. Setelah 3 kali keluar halaman, sesi ditutup.</p>
+</div>
+</div>
+<main id="app">
+<div class="bar2"><span id="who"></span><b id="pts"></b><span><button id="cp">Salin laporan</button><button id="lo">Keluar</button></span></div>
+<textarea id="rep" rows="6" readonly hidden></textarea><p class="sub" id="cpm"></p>
 <span class="tag">Kelas X TJKT</span>
 <h1>Detektif IP</h1>
 <p class="sub">Belajar IPv4 dan IPv6 sambil memecahkan kasus alamat. Mulai dari analogi, lalu main, lalu uji kemampuanmu.</p>
@@ -63,6 +115,8 @@ li{margin-bottom:6px}
 <button role="tab" aria-selected="false" data-t="t2">Sortir Kilat</button>
 <button role="tab" aria-selected="false" data-t="t3">Periksa Alamat</button>
 <button role="tab" aria-selected="false" data-t="t4">Kuis</button>
+<button role="tab" aria-selected="false" data-t="t6">Poin &amp; Grafik</button>
+<button role="tab" aria-selected="false" data-t="t7">Peringkat</button>
 <button role="tab" aria-selected="false" data-t="t5">Tantangan Kelas</button>
 </nav>
 
@@ -123,9 +177,26 @@ li{margin-bottom:6px}
 </ol>
 </div>
 </section>
+<section id="t6" hidden>
+<div class="card"><h2>Poinmu</h2><p class="big" id="bigp">0</p><p class="verdict" id="lvl"></p><div class="bar"><i id="lvb"></i></div><p class="sub" id="lvn"></p></div>
+<div class="card"><h2>Grafik poin per kegiatan</h2><div id="ch1"></div><p class="sub">Panjang batang dibandingkan dengan poin maksimal tiap kegiatan.</p></div>
+<div class="card"><h2>Cara dapat poin</h2><ul>
+<li><b>Sortir Kilat:</b> +10 tiap jawaban benar, +5 bonus mulai jawaban benar ke-3 berturut-turut (maks 170).</li>
+<li><b>Kuis:</b> +15 tiap jawaban benar (maks 90).</li>
+<li><b>Periksa Alamat:</b> +3 tiap alamat valid yang berbeda, sampai 10 alamat. Tekan Enter atau pindah kolom agar terhitung.</li>
+<li><b>Analogi:</b> +5 bila slider bit digeser sampai 128.</li>
+</ul><p class="sub">Untuk Sortir Kilat, yang dihitung adalah skor ronde terbaikmu.</p></div>
+</section>
+<section id="t7" hidden>
+<div class="card"><h2>Peringkat online</h2><p class="sub" id="om"></p><div class="ov"><table class="tb" id="ot"></table></div><div id="oc"></div><button class="go" id="or">Segarkan</button></div>
+<div class="card"><h2>Peringkat di perangkat ini</h2><p class="sub">Skor tersimpan otomatis saat kamu menekan Keluar atau sesi ditutup. Daftar ini hanya berlaku untuk browser di perangkat ini.</p><div class="ov"><table class="tb" id="lt"></table></div></div>
+<div class="card"><h2>Peringkat kelas (untuk guru)</h2><p>Kumpulkan laporan murid (tombol Salin laporan), tempel semuanya di sini, lalu buat peringkat.</p><textarea id="gin" rows="5" placeholder="Tempel laporan murid di sini"></textarea><button class="go" id="gb">Buat peringkat</button><div class="ov"><table class="tb" id="gt"></table></div><div id="ch2"></div></div>
+</section>
 </main>
 
 <script>
+// TEMPEL ALAMAT WEB APP APPS SCRIPT (berakhiran /exec) DI ANTARA TANDA KUTIP BERIKUT:
+const API_URL='https://script.google.com/macros/s/AKfycbxbSzmAmiR9p6BqD9MSED87p5TruAnnBgk4ZQgpK39MD7DTr15eJtijQ0SmYihavqkL/exec';
 const $=s=>document.querySelector(s);
 // tabs
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
@@ -250,6 +321,143 @@ qs.forEach((q,n)=>{
   });
   $('#quiz').appendChild(d);
 });
+// ===== login dan pengamanan =====
+let user=null,viol=0;const MAXV=3;
+const esc=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function wm(){
+  const t=esc(user.n+' / '+user.k);
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="380" height="200"><text x="20" y="110" transform="rotate(-25 190 100)" font-family="sans-serif" font-size="15" font-weight="700" fill="#808080" fill-opacity=".25">'+t+'</text></svg>';
+  $('#wm').style.backgroundImage='url("data:image/svg+xml;utf8,'+encodeURIComponent(svg)+'")';
+}
+function upd(){$('#who').textContent=user.n+' / '+user.k+'  |  Keluar halaman: '+viol+'/'+MAXV}
+function err(m){$('#lerr').textContent=m}
+function login(){
+  const n=$('#nm').value.trim().replace(/\s+/g,' '),k=$('#kl').value.trim().replace(/\s+/g,' ');
+  if(n.length<3){err('Isi nama lengkap, minimal 3 huruf.');return}
+  if(!k){err('Isi kelasmu, misalnya X TJKT 1.');return}
+  user={n,k};viol=0;err('');wm();upd();
+  document.body.classList.add('in');window.scrollTo(0,0);
+}
+$('#lg').onclick=login;
+['#nm','#kl'].forEach(s=>$(s).addEventListener('keydown',e=>{if(e.key==='Enter')login()}));
+function logout(msg){
+  try{sessionStorage.setItem('msg',msg||'')}catch(e){}
+  location.reload();
+}
+try{const m=sessionStorage.getItem('msg');if(m){$('#lerr').textContent=m;sessionStorage.removeItem('msg')}}catch(e){}
+$('#lo').onclick=()=>logout('');
+function leave(msg){
+  if(!user||document.body.classList.contains('lk'))return;
+  viol++;upd();
+  if(viol>=MAXV){logout('Kamu sudah keluar dari halaman '+MAXV+' kali, jadi sesi ditutup. Masuk lagi untuk melanjutkan.');return}
+  $('#lkm').textContent=(msg||'Kamu meninggalkan halaman ini')+' ('+viol+' dari '+MAXV+'). Tetap di halaman saat belajar ya.';
+  document.body.classList.add('lk');
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)leave()});
+addEventListener('blur',()=>leave());
+$('#back').onclick=()=>document.body.classList.remove('lk');
+addEventListener('keydown',e=>{
+  const k=(e.key||'').toLowerCase(),c=e.ctrlKey||e.metaKey;
+  if(k==='f12'||(c&&['p','s','u'].includes(k))||(c&&e.shiftKey&&['i','j','c','s'].includes(k))||(e.metaKey&&e.shiftKey&&['3','4','5'].includes(k)))e.preventDefault();
+});
+addEventListener('keyup',e=>{
+  if(e.key==='PrintScreen'){try{navigator.clipboard.writeText('Screenshot dinonaktifkan')}catch(x){}leave('Tombol PrintScreen terdeteksi')}
+});
+['contextmenu','dragstart'].forEach(ev=>addEventListener(ev,e=>e.preventDefault()));
+$('#cp').onclick=()=>{
+  const t='LAPORAN DETEKTIF IP\nNama: '+user.n+'\nKelas: '+user.k+'\nSkor Sortir Kilat: '+score+'/'+items.length+'\nSkor Kuis: '+qc+'/'+qs.length+'\nKeluar halaman: '+viol+'\nWaktu: '+new Date().toLocaleString('id-ID');
+  $('#rep').hidden=false;$('#rep').value=t;
+  const fail=()=>{$('#cpm').textContent='Salin teks di kotak ini, lalu kirim ke gurumu.'};
+  try{navigator.clipboard.writeText(t).then(()=>{$('#cpm').textContent='Laporan tersalin. Tempel dan kirim ke gurumu.'},fail)}catch(e){fail()}
+};
+// ===== poin, grafik, peringkat =====
+const P={sortir:0,kuis:0,periksa:0,jelajah:0},MX={sortir:170,kuis:90,periksa:30,jelajah:5};
+const LV=[[0,'Pemula Jaringan'],[60,'Teknisi Junior'],[130,'Admin Jaringan'],[220,'Master Jaringan']];
+const tot=()=>P.sortir+P.kuis+P.periksa+P.jelajah;
+let rp=0,stk=0;
+function toast(t){let e=$('#toast');if(!e){e=document.createElement('div');e.id='toast';document.body.appendChild(e)}e.textContent=t;e.className='show';clearTimeout(e._t);e._t=setTimeout(()=>{e.className=''},1400)}
+function bars(el,rows){el.innerHTML=rows.map(r=>'<div class="br"><span>'+esc(r.l)+'</span><span class="tr"><i style="width:'+Math.max(2,r.v/r.m*100)+'%;background:'+r.c+'"></i></span><b>'+r.v+'</b></div>').join('')}
+function refresh(){
+  const t=tot();let L=0;LV.forEach((x,k)=>{if(t>=x[0])L=k});
+  $('#pts').textContent='⭐ '+t+' poin | '+LV[L][1];
+  $('#bigp').textContent=t;$('#lvl').textContent=LV[L][1];
+  const nx=LV[L+1];$('#lvb').style.width=(nx?(t-LV[L][0])/(nx[0]-LV[L][0])*100:100)+'%';
+  $('#lvn').textContent=nx?(nx[0]-t)+' poin lagi menuju '+nx[1]:'Level tertinggi tercapai!';
+  bars($('#ch1'),[{l:'Sortir Kilat',v:P.sortir,m:MX.sortir,c:'#d81b7a'},{l:'Kuis',v:P.kuis,m:MX.kuis,c:'#6a3df0'},{l:'Periksa Alamat',v:P.periksa,m:MX.periksa,c:'#ff8a1f'},{l:'Analogi',v:P.jelajah,m:MX.jelajah,c:'#0b7f73'}]);
+}
+const _pick=pick;
+pick=function(v){
+  const was=locked;_pick(v);
+  if(was||!locked)return;
+  if($('#fb').classList.contains('ok')){stk++;const g=stk>=3?15:10;rp+=g;toast('+'+g+(stk>=3?' beruntun x'+stk:''))}else stk=0;
+  P.sortir=Math.max(P.sortir,rp);refresh();
+};
+const _start=start;start=function(){rp=0;stk=0;_start()};
+$('#quiz').addEventListener('click',()=>{const n=qc*15;if(n>P.kuis){toast('+'+(n-P.kuis)+' kuis');P.kuis=n;refresh()}});
+const seen=new Set();
+function credit(){const s=$('#ip').value.trim().toLowerCase();if(!s||seen.has(s)||!(v4(s)||v6(s)))return;seen.add(s);if(seen.size<=10){P.periksa=seen.size*3;toast('+3 alamat baru');refresh()}}
+$('#ip').addEventListener('change',credit);
+$('#chips').addEventListener('click',credit);
+$('#bits').addEventListener('input',()=>{if(+$('#bits').value===128&&!P.jelajah){P.jelajah=5;toast('+5 jelajah');refresh()}});
+function load(){try{return JSON.parse(localStorage.getItem('dip_lb')||'[]')}catch(e){return[]}}
+function saveLocal(){
+  if(!user)return;const t=tot();
+  try{const a=load(),k=a.find(x=>x.n===user.n&&x.k===user.k);
+  if(k)k.p=Math.max(k.p,t);else a.push({n:user.n,k:user.k,p:t});
+  localStorage.setItem('dip_lb',JSON.stringify(a))}catch(e){}
+}
+const _lo=logout;logout=function(m){saveLocal();_lo(m)};
+const TH='<tr><th>#</th><th>Nama</th><th>Kelas</th><th>Poin</th></tr>';
+function rows(a){return a.map((x,i)=>'<tr><td>'+(['🥇','🥈','🥉'][i]||i+1)+'</td><td>'+esc(x.n)+'</td><td>'+esc(x.k)+'</td><td>'+x.p+'</td></tr>').join('')}
+function lt(){
+  const a=load();
+  if(user){const k=a.find(x=>x.n===user.n&&x.k===user.k);if(k)k.p=Math.max(k.p,tot());else a.push({n:user.n,k:user.k,p:tot()})}
+  a.sort((x,y)=>y.p-x.p);
+  $('#lt').innerHTML=TH+(a.length?rows(a.slice(0,10)):'<tr><td colspan="4">Belum ada skor tersimpan.</td></tr>');
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.t==='t7')lt()}));
+$('#gb').onclick=()=>{
+  const m=new Map(),re=/DIP\|([^|\r\n]*)\|([^|\r\n]*)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)/g;let r;
+  while((r=re.exec($('#gin').value))){const key=r[1].toLowerCase()+'|'+r[2].toLowerCase(),p=+r[3];if(!m.has(key)||m.get(key).p<p)m.set(key,{n:r[1],k:r[2],p})}
+  const a=[...m.values()].sort((x,y)=>y.p-x.p);
+  $('#gt').innerHTML=TH+(a.length?rows(a):'<tr><td colspan="4">Tidak ada laporan terbaca. Pastikan baris KODE ikut ditempel.</td></tr>');
+  if(!a.length){$('#ch2').innerHTML='';return}
+  const c={};a.forEach(x=>{(c[x.k]=c[x.k]||[]).push(x.p)});
+  const cr=Object.entries(c).map(([k,v])=>({l:k,v:Math.round(v.reduce((s,y)=>s+y,0)/v.length),c:'#2f6feb'}));
+  const mx=Math.max(1,...cr.map(x=>x.v));cr.forEach(x=>x.m=mx);
+  const top=a.slice(0,5).map(x=>({l:x.n,v:x.p,m:Math.max(1,a[0].p),c:'#d81b7a'}));
+  $('#ch2').innerHTML='<h3>Lima teratas</h3><div id="c2a"></div><h3>Rata-rata poin per kelas</h3><div id="c2b"></div>';
+  bars($('#c2a'),top);bars($('#c2b'),cr);
+};
+$('#cp').onclick=()=>{
+  const cl=s=>s.replace(/\|/g,'/');
+  const t='LAPORAN DETEKTIF IP\nNama: '+user.n+'\nKelas: '+user.k+'\nTotal poin: '+tot()+'\nKeluar halaman: '+viol+'\nWaktu: '+new Date().toLocaleString('id-ID')+'\nKODE: DIP|'+cl(user.n)+'|'+cl(user.k)+'|'+tot()+'|'+P.sortir+'|'+P.kuis+'|'+P.periksa+'|'+viol;
+  $('#rep').hidden=false;$('#rep').value=t;
+  const fail=()=>{$('#cpm').textContent='Salin teks di kotak ini, lalu kirim ke gurumu.'};
+  try{navigator.clipboard.writeText(t).then(()=>{$('#cpm').textContent='Laporan tersalin. Tempel dan kirim ke gurumu.'},fail)}catch(e){fail()}
+};
+refresh();lt();
+// ===== sinkron ke Google Sheets =====
+let st;
+function payload(){return JSON.stringify({n:user.n,k:user.k,p:tot(),s:P.sortir,q:P.kuis,c:P.periksa,v:viol})}
+function sendNow(){if(!API_URL||!user||!tot())return;try{fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:payload(),keepalive:true}).catch(()=>{})}catch(e){}}
+function sync(){if(!API_URL||!user)return;clearTimeout(st);st=setTimeout(sendNow,1500)}
+const _rf=refresh;refresh=function(){_rf();sync()};
+const _lo2=logout;logout=function(m){sendNow();_lo2(m)};
+function pull(){
+  if(!API_URL){$('#om').textContent='Peringkat online belum diaktifkan. Guru perlu mengisi API_URL di file index.html.';return}
+  $('#om').textContent='Memuat…';
+  fetch(API_URL+'?t='+Date.now()).then(r=>r.json()).then(d=>{
+    const a=(d.rows||[]).slice(0,20);
+    $('#ot').innerHTML=TH+(a.length?rows(a):'<tr><td colspan="4">Belum ada skor masuk.</td></tr>');
+    const mx=Math.max(1,a.length?a[0].p:1);
+    bars($('#oc'),a.slice(0,5).map(x=>({l:x.n,v:x.p,m:mx,c:'#d81b7a'})));
+    $('#om').textContent='Diperbarui '+new Date().toLocaleTimeString('id-ID')+'. Otomatis tiap 15 detik.';
+  }).catch(()=>{$('#om').textContent='Tidak bisa terhubung ke papan peringkat. Periksa internet atau alamat Apps Script.'});
+}
+$('#or').onclick=pull;
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.t==='t7')pull()}));
+setInterval(()=>{if(!$('#t7').hidden)pull()},15000);
 </script>
 </body>
 </html>
