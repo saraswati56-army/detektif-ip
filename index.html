@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Detektif IP: Belajar IPv4 dan IPv6</title>
+<style>
+:root{--bg:#f5f8ff;--card:#fff;--ink:#14213d;--mute:#51607e;--blue:#2f6feb;--blue-soft:#e3ecff;--yel:#ffc93c;--ok:#13795b;--ok-soft:#dcf5ea;--bad:#c62f3a;--bad-soft:#fde4e6;--line:#c9d6f2;--grid:#e4ebfa;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0f1730;--card:#17224a;--ink:#eaf0ff;--mute:#a5b3d6;--blue:#6c9cff;--blue-soft:#1f2f66;--yel:#ffd35c;--ok:#5fdcae;--ok-soft:#12372f;--bad:#ff8790;--bad-soft:#42212a;--line:#2d3d7a;--grid:#16214a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f1730;--card:#17224a;--ink:#eaf0ff;--mute:#a5b3d6;--blue:#6c9cff;--blue-soft:#1f2f66;--yel:#ffd35c;--ok:#5fdcae;--ok-soft:#12372f;--bad:#ff8790;--bad-soft:#42212a;--line:#2d3d7a;--grid:#16214a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--ink);font:17px/1.55 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:clamp(2rem,7vw,3rem);line-height:1.05;margin:8px 0 6px;letter-spacing:-.02em}
+h2{font-size:1.3rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.sub{color:var(--mute);max-width:52ch}
+.tag{display:inline-block;background:var(--yel);color:#14213d;border-radius:8px;padding:2px 10px;font-weight:700;font-size:.9rem;transform:rotate(-2deg)}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0}
+nav button{font:inherit;font-weight:700;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 14px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+section[hidden]{display:none}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:4px 4px 0 var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.big{font-size:2.2rem;font-weight:800;color:var(--blue);line-height:1}
+.pill{display:inline-block;background:var(--blue-soft);border-radius:8px;padding:1px 8px;font-size:.9rem}
+.stage{text-align:center;padding:28px 12px}
+.item{font-size:clamp(1.4rem,6vw,2rem);font-weight:800;word-break:break-word;min-height:2.6em;display:flex;align-items:center;justify-content:center}
+.btns{display:flex;gap:10px;justify-content:center;margin-top:10px}
+.btns button,.go{font:inherit;font-weight:800;font-size:1.05rem;border:2px solid var(--ink);border-radius:12px;padding:10px 22px;cursor:pointer;background:var(--yel);color:#14213d}
+.btns button:disabled{opacity:.5;cursor:default}
+.fb{min-height:3.4em;margin-top:12px;border-radius:10px;padding:8px 12px;text-align:left}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}.fb.no{background:var(--bad-soft);color:var(--bad)}
+.score{display:flex;justify-content:space-between;font-weight:700;margin-bottom:8px}
+.bar{height:10px;border-radius:6px;background:var(--blue-soft);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+input{width:100%;font:700 1.25rem ui-monospace,Menlo,Consolas,monospace;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--bg);color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chips button{font:.85rem ui-monospace,Menlo,monospace;border:1.5px dashed var(--blue);background:transparent;color:var(--blue);border-radius:8px;padding:4px 8px;cursor:pointer}
+.res{min-height:5em;margin-top:8px}
+.verdict{font-weight:800;font-size:1.15rem}
+.q{border-top:1.5px dashed var(--line);padding-top:12px;margin-top:12px}
+.opts{display:grid;gap:8px;margin-top:8px}
+.opts button{font:inherit;text-align:left;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 12px;cursor:pointer}
+.opts button.right{border-color:var(--ok);background:var(--ok-soft)}.opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+ol{padding-left:20px;margin:6px 0}
+li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<main>
+<span class="tag">Kelas X TJKT</span>
+<h1>Detektif IP</h1>
+<p class="sub">Belajar IPv4 dan IPv6 sambil memecahkan kasus alamat. Mulai dari analogi, lalu main, lalu uji kemampuanmu.</p>
+
+<nav role="tablist" aria-label="Menu belajar">
+<button role="tab" aria-selected="true" data-t="t1">Analogi</button>
+<button role="tab" aria-selected="false" data-t="t2">Sortir Kilat</button>
+<button role="tab" aria-selected="false" data-t="t3">Periksa Alamat</button>
+<button role="tab" aria-selected="false" data-t="t4">Kuis</button>
+<button role="tab" aria-selected="false" data-t="t5">Tantangan Kelas</button>
+</nav>
+
+<section id="t1">
+<div class="card">
+<h2>Alamat rumah di kota yang makin penuh</h2>
+<p>Setiap perangkat di jaringan butuh alamat IP, seperti setiap rumah butuh nomor. IPv4 punya sekitar 4,3 miliar nomor. Dulu terasa banyak, tetapi HP, laptop, CCTV, dan lampu pintar sekarang jumlahnya jauh lebih banyak.</p>
+</div>
+<div class="two">
+<div class="card"><div class="big mono">32-bit</div><h2>IPv4</h2>
+<p>Kota lama dengan nomor rumah terbatas (± 4,3 miliar).</p>
+<p class="mono pill">192.168.1.10</p><p>4 octet, desimal, dipisah titik.</p></div>
+<div class="card"><div class="big mono">128-bit</div><h2>IPv6</h2>
+<p>Kota raksasa baru: nomor rumah cukup untuk setiap butir pasir (± 3,4 × 10³⁸).</p>
+<p class="mono pill">2001:db8::1</p><p>8 hextet, heksadesimal, dipisah titik dua.</p></div>
+</div>
+<div class="card">
+<h2>Coba hitung sendiri</h2>
+<p>Satu bit punya 2 kemungkinan. Jadi 32 bit memberi 2³² alamat, dan 128 bit memberi 2¹²⁸. Geser untuk melihat bagaimana jumlah alamat meledak.</p>
+<input type="range" id="bits" min="8" max="128" step="8" value="32" aria-label="Jumlah bit" style="padding:0">
+<p id="bitout" class="mono" style="margin-top:8px"></p>
+</div>
+</section>
+
+<section id="t2" hidden>
+<div class="card stage">
+<div class="score"><span>Skor: <span id="sc">0</span></span><span>Soal <span id="no">1</span>/12</span></div>
+<div class="bar"><i id="pr"></i></div>
+<p style="margin-top:14px" class="sub">Ciri atau alamat ini milik…</p>
+<div class="item mono" id="it"></div>
+<div class="btns"><button id="b4">IPv4</button><button id="b6">IPv6</button></div>
+<div class="fb" id="fb" aria-live="polite"></div>
+<div class="btns"><button id="nx" hidden>Lanjut</button></div>
+</div>
+</section>
+
+<section id="t3" hidden>
+<div class="card">
+<h2>Periksa alamat</h2>
+<p>Ketik sebuah alamat IP. Detektif akan memeriksa jenis dan apakah penulisannya benar.</p>
+<input id="ip" placeholder="contoh: 192.168.1.10" autocomplete="off" spellcheck="false" aria-label="Alamat IP">
+<div class="chips" id="chips"></div>
+<div class="res" id="res" aria-live="polite"></div>
+</div>
+</section>
+
+<section id="t4" hidden>
+<div class="card"><h2>Kuis kilat</h2><p>Pilih satu jawaban. Penjelasan muncul setelah kamu menjawab.</p><div id="quiz"></div><p class="verdict" id="qs"></p></div>
+</section>
+
+<section id="t5" hidden>
+<div class="card">
+<h2>Tiga tantangan untuk kelas</h2>
+<ol>
+<li><b>Lomba Octet vs Hextet.</b> Bagi kelas jadi dua tim. Satu tim menulis 10 alamat IPv4, tim lain 10 alamat IPv6. Tukar kertas, lalu periksa dengan menu Periksa Alamat. Tim dengan alamat valid terbanyak menang.</li>
+<li><b>Kota Kehabisan Nomor.</b> Setiap siswa mendapat kartu nomor rumah 1 sampai 20, padahal ada 30 siswa. Rasakan apa yang terjadi saat alamat habis, lalu diskusikan mengapa IPv6 dibuat.</li>
+<li><b>Misi Lapangan.</b> Buka pengaturan jaringan HP atau laptop (atau jalankan <span class="mono pill">ipconfig</span> atau <span class="mono pill">ip a</span>). Catat alamat IPv4 dan IPv6 perangkatmu, lalu tentukan mana yang privat dan mana yang link-local.</li>
+</ol>
+</div>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+// tabs
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('main section').forEach(s=>s.hidden=s.id!==b.dataset.t);
+});
+// bits slider
+const fmt=n=>n.toLocaleString('id-ID');
+function bits(){
+  const b=+$('#bits').value, v=BigInt(2)**BigInt(b);
+  let s=v.toString(); let txt=b<=64?fmt(Number(v))+(b>53?' (perkiraan)':''):(s[0]+','+s.slice(1,3)+' × 10^'+(s.length-1));
+  $('#bitout').textContent=b+' bit → '+txt+' alamat'+(b===32?'  (IPv4)':b===128?'  (IPv6)':'');
+}
+$('#bits').oninput=bits;bits();
+
+// sorting game
+const items=[
+["192.168.1.10","4","Empat octet dipisah titik: IPv4. Ini alamat jaringan lokal."],
+["2001:db8::1","6","Heksadesimal dipisah titik dua: IPv6."],
+["32-bit","4","IPv4 memakai alamat 32-bit."],
+["128-bit","6","IPv6 memakai alamat 128-bit."],
+["8.8.8.8","4","Ini Google DNS versi IPv4."],
+["fe80::1","6","Ini alamat link-local IPv6."],
+["Ditulis desimal bertitik","4","Format IPv4, misalnya 192.168.1.1."],
+["Ditulis heksadesimal","6","Format IPv6, misalnya 2001:db8::1."],
+["± 4,3 miliar alamat","4","Jumlah alamat IPv4 terbatas."],
+["± 3,4 × 10³⁸ alamat","6","Jumlah alamat IPv6 sangat besar."],
+["8 bagian (hextet)","6","IPv6 terdiri dari 8 hextet, tiap hextet 16 bit."],
+["4 bagian (octet)","4","IPv4 terdiri dari 4 octet, tiap octet 8 bit."]
+];
+let order,i,score,locked;
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function start(){order=shuffle(items);i=0;score=0;show()}
+function show(){
+  locked=false;const it=order[i];
+  $('#it').textContent=it[0];$('#fb').textContent='';$('#fb').className='fb';
+  $('#sc').textContent=score;$('#no').textContent=i+1;$('#pr').style.width=(i/items.length*100)+'%';
+  $('#b4').disabled=$('#b6').disabled=false;$('#nx').hidden=true;
+}
+function pick(v){
+  if(locked)return;locked=true;const it=order[i],ok=it[1]===v;
+  if(ok)score++;$('#sc').textContent=score;
+  $('#fb').className='fb '+(ok?'ok':'no');
+  $('#fb').textContent=(ok?'Benar! ':'Belum tepat. Jawabannya IPv'+it[1]+'. ')+it[2];
+  $('#b4').disabled=$('#b6').disabled=true;
+  $('#nx').hidden=false;$('#nx').textContent=i===items.length-1?'Lihat hasil':'Lanjut';
+}
+$('#b4').onclick=()=>pick('4');$('#b6').onclick=()=>pick('6');
+$('#nx').onclick=()=>{
+  if(i<items.length-1){i++;show();return}
+  $('#pr').style.width='100%';
+  $('#it').textContent='Skor akhir '+score+'/'+items.length;
+  $('#fb').className='fb ok';
+  $('#fb').textContent=score>=10?'Detektif handal! Kamu sudah paham perbedaan keduanya.':score>=7?'Bagus! Ulangi sekali lagi untuk sempurna.':'Tidak apa-apa. Baca lagi tab Analogi, lalu coba lagi.';
+  $('#nx').textContent='Main lagi';$('#nx').onclick=()=>{$('#nx').onclick=nextHandler;start()};
+};
+const nextHandler=$('#nx').onclick;
+start();
+
+// address checker
+function v4(s){
+  if(!/^\d{1,3}(\.\d{1,3}){3}$/.test(s))return null;
+  const p=s.split('.').map(Number);return p.every(n=>n<=255)?p:false;
+}
+function v6(s){
+  if(!/^[0-9a-fA-F:]+$/.test(s)||!s.includes(':'))return false;
+  const p=s.split('::');if(p.length>2)return false;
+  const g=x=>x===''?[]:x.split(':');
+  const all=g(p[0]).concat(p.length===2?g(p[1]):[]);
+  if(!all.every(h=>/^[0-9a-fA-F]{1,4}$/.test(h)))return false;
+  return p.length===2?all.length<=7:all.length===8;
+}
+function check(){
+  const s=$('#ip').value.trim(),r=$('#res');
+  if(!s){r.innerHTML='<p class="sub">Menunggu alamat…</p>';return}
+  const a=v4(s);
+  if(a){
+    let note='Alamat publik.';
+    if(a[0]===10||(a[0]===172&&a[1]>=16&&a[1]<=31)||(a[0]===192&&a[1]===168))note='Alamat privat, dipakai di jaringan lokal.';
+    else if(a[0]===127)note='Alamat loopback, mengarah ke komputermu sendiri.';
+    r.innerHTML='<p class="verdict" style="color:var(--ok)">IPv4 valid</p><p>4 octet, masing-masing 0 sampai 255. '+note+'</p>';return;
+  }
+  if(a===false){r.innerHTML='<p class="verdict" style="color:var(--bad)">Mirip IPv4, tetapi tidak valid</p><p>Setiap octet harus berada di antara 0 dan 255.</p>';return}
+  if(v6(s)){
+    let note=/^fe80:/i.test(s)?'Awalan fe80 berarti alamat link-local.':s==='::1'?'Ini alamat loopback IPv6.':'Tanda :: menyingkat deretan hextet yang bernilai nol (boleh dipakai satu kali).';
+    r.innerHTML='<p class="verdict" style="color:var(--ok)">IPv6 valid</p><p>Heksadesimal, dipisah titik dua. '+note+'</p>';return;
+  }
+  let why='Bukan format IPv4 maupun IPv6.';
+  if(s.includes(':'))why='Mirip IPv6, tetapi ada yang salah. Periksa: hanya karakter 0-9 dan a-f, maksimal 4 karakter per hextet, jumlahnya 8 (atau lebih sedikit bila memakai :: satu kali).';
+  else if(s.includes('.'))why='Mirip IPv4, tetapi IPv4 harus tepat 4 octet berisi angka.';
+  r.innerHTML='<p class="verdict" style="color:var(--bad)">Tidak valid</p><p>'+why+'</p>';
+}
+$('#ip').oninput=check;
+["192.168.1.10","8.8.8.8","192.168.1.256","2001:db8::1","fe80::1","2001:4860:4860::8888","2001:db8::1::2","2001:0db8:85a3:0000:0000:8a2e:0370:7334"].forEach(x=>{
+  const b=document.createElement('button');b.textContent=x;b.onclick=()=>{$('#ip').value=x;check()};$('#chips').appendChild(b);
+});
+check();
+
+// quiz
+const qs=[
+["Berapa panjang alamat IPv4?",["16-bit","32-bit","64-bit","128-bit"],1,"IPv4 memakai 32-bit, sekitar 4,3 miliar alamat."],
+["Alamat mana yang berformat IPv6?",["10.0.0.1","255.255.255.0","2001:4860:4860::8888","192.168.0.1"],2,"IPv6 ditulis heksadesimal dengan titik dua."],
+["Mengapa IPv6 dibuat?",["Agar internet lebih lambat","Mengatasi keterbatasan jumlah alamat IPv4","Agar kabel tidak diperlukan","Menggantikan DNS"],1,"IPv6 hadir karena alamat IPv4 terbatas."],
+["IPv6 terdiri dari berapa bagian (hextet)?",["4","6","8","16"],2,"IPv6 punya 8 hextet, masing-masing 16 bit."],
+["Alamat 192.168.1.256 itu…",["IPv4 valid","IPv6 valid","Tidak valid, octet maksimal 255","Alamat link-local"],2,"Setiap octet IPv4 hanya boleh 0 sampai 255."],
+["Apa kekurangan IPv6 menurut materi?",["Alamat terbatas","Kompatibilitas awal masih terbatas","Tidak ada pilihan keamanan","Hanya untuk jaringan lokal"],1,"Banyak perangkat dan jaringan lama masih bergantung pada IPv4."]
+];
+let qd=0,qc=0;
+qs.forEach((q,n)=>{
+  const d=document.createElement('div');d.className='q';
+  d.innerHTML='<b>'+(n+1)+'. '+q[0]+'</b><div class="opts"></div><p class="sub" style="margin-top:8px"></p>';
+  const o=d.querySelector('.opts');
+  q[1].forEach((t,k)=>{
+    const b=document.createElement('button');b.textContent=t;
+    b.onclick=()=>{
+      if(d.dataset.done)return;d.dataset.done=1;qd++;
+      const bs=o.querySelectorAll('button');bs[q[2]].classList.add('right');
+      if(k===q[2])qc++;else b.classList.add('wrong');
+      d.querySelector('p').textContent=q[3];
+      if(qd===qs.length)$('#qs').textContent='Skor kuis: '+qc+'/'+qs.length+(qc===qs.length?'. Sempurna!':'. Terus berlatih!');
+    };o.appendChild(b);
+  });
+  $('#quiz').appendChild(d);
+});
+</script>
+</body>
+</html>
